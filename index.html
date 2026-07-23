@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Celestial Live Wallpaper Dashboard</title>
+  
+  <meta name="description" content="A premium glassmorphic interactive live wallpaper dashboard with dynamic Sun/Moon day-night cycle, custom ambient overlays, widgets, and synthesized soundscapes.">
+  <meta name="keywords" content="live wallpaper, day night cycle, glassmorphism, productivity dashboard, ambient noise, pomodoro timer">
+  <meta name="author" content="Antigravity Pair Programmer">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+  <!-- Background Wallpaper Layers (Dual buffers for crossfading) -->
+  <div id="wallpaper-container">
+    <div id="bg-layer-1" class="wallpaper-layer active"></div>
+    <div id="bg-layer-2" class="wallpaper-layer"></div>
+  </div>
+
+  <!-- Dynamic Sky Glow Overlay -->
+  <div id="ambient-sky-glow"></div>
+
+  <!-- Vignette/Ambient shadows -->
+  <div class="vignette"></div>
+
+
+
+  <!-- HTML5 Canvas Layer for Interactive Particles -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Complete Interactive Dashboard Overlay -->
+  <div id="dashboard-ui">
+    
+    <!-- HEADER / TOP BAR -->
+    <header id="top-bar">
+      <!-- Focus Pomodoro Widget -->
+      <div id="widget-pomodoro" class="glass-panel top-widget">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="timer-display" id="pomodoro-time">25:00</span>
+        <button class="timer-btn" id="pomodoro-toggle" title="Start Focus Mode" aria-label="Start Timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </button>
+        <button class="timer-btn" id="pomodoro-reset" title="Reset Focus Mode" aria-label="Reset Timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Synthesized Ambient Soundscapes -->
+      <div id="widget-soundscape" class="glass-panel top-widget soundscape-widget">
+        <button class="sound-toggle-btn" id="btn-sound-rain" title="Toggle Synthesized Rain Soundscape" aria-label="Rain Sound">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 13a4 4 0 0 1-8 0"></path>
+            <path d="M12 2v3m0 14v3M4.93 4.93l2.12 2.12m9.9 9.9l2.12 2.12M2 12h3m14 0h3M4.93 19.07l2.12-2.12m9.9-9.9l2.12-2.12"></path>
+          </svg>
+        </button>
+        <button class="sound-toggle-btn" id="btn-sound-waves" title="Toggle Synthesized Ocean Waves" aria-label="Ocean Waves Sound">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 10a4 4 0 0 1 8 0v2a4 4 0 0 0 8 0v-2a4 4 0 0 1 8 0"></path>
+            <path d="M2 14a4 4 0 0 1 8 0v2a4 4 0 0 0 8 0v-2a4 4 0 0 1 8 0"></path>
+          </svg>
+        </button>
+        <input type="range" id="soundscape-volume" min="0" max="1" step="0.05" value="0.5" class="sound-volume" title="Adjust Ambient Volume" aria-label="Volume Slider">
+      </div>
+
+      <!-- Search Widget -->
+      <form id="search-widget-form" action="https://www.google.com/search" method="get" target="_blank" class="search-widget">
+        <input type="text" name="q" placeholder="Type here to search Google..." aria-label="Search inputs">
+        <button type="submit" style="background:none;border:none;" aria-label="Submit Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </form>
+    </header>
+
+    <!-- MIDDLE REGION -->
+    <main id="main-area">
+      <!-- Left sidebar widgets -->
+      <section id="left-sidebar" aria-label="Left Sidebar Widgets">
+        <!-- Notes Widget -->
+        <div id="widget-notes" class="glass-panel sidebar-widget">
+          <div class="widget-header">
+            <div class="widget-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              Quick Scribble
+            </div>
+          </div>
+          <textarea id="scribble-pad" class="notepad-content custom-scroll" placeholder="Write something down... Content saves automatically."></textarea>
+        </div>
+
+        <!-- Todo Widget -->
+        <div id="widget-todo" class="glass-panel sidebar-widget">
+          <div class="widget-header">
+            <div class="widget-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+              My Tasks
+            </div>
+          </div>
+          <div class="todo-container custom-scroll" id="todo-list">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="todo-input-bar">
+            <input type="text" id="new-todo-text" placeholder="Add a new task..." aria-label="New task input">
+            <button id="btn-add-todo" class="todo-add-btn" title="Add task" aria-label="Add Task">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Center Clock Area -->
+      <section id="center-clock" aria-label="Time and Greeting">
+        <!-- Analog Clock representation -->
+        <div id="analog-clock-wrap">
+          <div id="hour" class="analog-hand hour-hand"></div>
+          <div id="minute" class="analog-hand minute-hand"></div>
+          <div id="second" class="analog-hand second-hand"></div>
+        </div>
+
+        <!-- Digital clock representation -->
+        <div id="digital-clock" class="clock-digital">
+          00:00<span>:00</span>
+        </div>
+        <div id="greeting" class="greeting-text">Good evening</div>
+        <div id="current-date" class="date-text">Monday, July 20</div>
+      </section>
+
+      <!-- Right sidebar settings toggler -->
+      <section id="right-sidebar" aria-label="Navigation Buttons">
+        <button id="btn-settings-trigger" class="glass-panel overlay-btn" title="Configure Live Wallpaper" aria-label="Open Settings">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </section>
+    </main>
+
+    <!-- FOOTER / BOTTOM BAR -->
+    <footer id="bottom-bar">
+      <!-- Slideshow Navigation controls -->
+      <div id="slideshow-nav" class="glass-panel nav-widget">
+        <button class="nav-widget-btn" id="btn-prev-wp" title="Previous Wallpaper" aria-label="Previous Wallpaper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="nav-widget-btn" id="btn-play-pause" title="Play/Pause Slideshow" aria-label="Play Slideshow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </button>
+        <button class="nav-widget-btn" id="btn-next-wp" title="Next Wallpaper" aria-label="Next Wallpaper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Selected picture information -->
+      <div id="selected-wallpaper-info" class="wallpaper-info">
+        DIGITAL ARTWORK
+      </div>
+    </footer>
+  </div>
+
+  <!-- SLIDE-OUT SETTINGS CONFIG PANEL -->
+  <aside id="settings-panel" class="glass-panel">
+    <div class="settings-header">
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Preferences
+      </h3>
+      <button id="btn-close-settings" class="close-settings-btn" title="Close Panel" aria-label="Close Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="settings-content custom-scroll" style="overflow-y: auto; flex: 1;">
+      
+      <!-- 1. Day/Night Cycle Configuration -->
+      <section class="settings-group" aria-label="Celestial settings">
+        <div class="settings-group-title">Day/Night Celestial Cycle</div>
+
+        <div class="settings-control">
+          <span>Sync to System Time</span>
+          <label class="switch" for="toggle-time-sync" checked>
+            <input type="checkbox" id="toggle-time-sync" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <!-- Time Machine Slider (Visible when Sync is disabled) -->
+        <div class="settings-control" id="demo-time-control" style="display:none; flex-direction:column; gap:0.25rem; align-items:stretch; padding: 0.5rem 0;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; width:100%;">
+            <span>Time Machine</span>
+            <strong id="demo-time-val">12:00 PM</strong>
+          </div>
+          <input type="range" id="demo-time-slider" min="0" max="1439" value="720" style="width:100%; margin-top:0.35rem;" aria-label="Demo Time Slider">
+        </div>
+      </section>
+
+      <!-- 2. Theme Configuration -->
+      <section class="settings-group" aria-label="Theme settings">
+        <div class="settings-group-title">Interface Accent</div>
+        <div class="accent-picker" id="accent-picker-container">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="settings-control" style="margin-top: 0.5rem;">
+          <span>Light Interface Mode</span>
+          <label class="switch" for="theme-light-toggle">
+            <input type="checkbox" id="theme-light-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 3. Wallpaper Configuration -->
+      <section class="settings-group" aria-label="Wallpaper settings">
+        <div class="settings-group-title">Wallpaper Preview</div>
+        <div class="wallpaper-grid" id="settings-wallpaper-grid">
+          <!-- Dynamically filled thumbnails -->
+        </div>
+        <div class="settings-control" id="slideshow-toggle-row">
+          <span>Slideshow Auto-Rotate</span>
+          <label class="switch" for="slideshow-toggle">
+            <input type="checkbox" id="slideshow-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-control" id="slideshow-interval-row">
+          <span>Rotate Interval (sec)</span>
+          <input type="range" id="slideshow-interval" min="10" max="300" step="10" value="60" aria-label="Rotate Interval">
+        </div>
+        <div class="settings-control">
+          <span>Ken Burns Style</span>
+          <select id="kenburns-style" aria-label="Ken Burns Style">
+            <option value="random">Dynamic (Random)</option>
+            <option value="zoom-in">Slow Zoom In</option>
+            <option value="zoom-out">Slow Zoom Out</option>
+            <option value="pan-left">Pan Left</option>
+            <option value="pan-right">Pan Right</option>
+            <option value="none">Disabled</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- 4. Ambient Motion Overlay -->
+      <section class="settings-group" aria-label="Ambient overlay settings">
+        <div class="settings-group-title">Ambient Overlay Effect</div>
+        <div class="settings-control">
+          <span>Particle Effect</span>
+          <select id="particle-effect-type" aria-label="Particle Effect Type">
+            <option value="stars">Floating Stars</option>
+            <option value="orbs">Ambient Light Orbs</option>
+            <option value="rain">Relaxing Rain</option>
+            <option value="snow">Gentle Snow</option>
+            <option value="none">Disabled</option>
+          </select>
+        </div>
+        <div class="settings-control">
+          <span>Particle Density</span>
+          <input type="range" id="particle-density" min="20" max="250" step="10" value="100" aria-label="Particle Density">
+        </div>
+        <div class="settings-control">
+          <span>Motion Speed</span>
+          <input type="range" id="particle-speed" min="1" max="10" step="1" value="3" aria-label="Motion Speed">
+        </div>
+      </section>
+
+      <!-- 5. Clock Layout & Widgets Display -->
+      <section class="settings-group" aria-label="Widget toggles">
+        <div class="settings-group-title">Widgets & Customization</div>
+        <div class="settings-control">
+          <span>Clock Layout</span>
+          <select id="clock-style" aria-label="Clock Style">
+            <option value="digital">Digital Clock</option>
+            <option value="analog">Analog Minimal</option>
+            <option value="none">Disabled</option>
+          </select>
+        </div>
+        <div class="settings-control">
+          <span>Show Notes Scribbler</span>
+          <label class="switch" for="toggle-widget-notes">
+            <input type="checkbox" id="toggle-widget-notes" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-control">
+          <span>Show Tasks List</span>
+          <label class="switch" for="toggle-widget-todo">
+            <input type="checkbox" id="toggle-widget-todo" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-control">
+          <span>Show Focus Pomodoro</span>
+          <label class="switch" for="toggle-widget-pomodoro">
+            <input type="checkbox" id="toggle-widget-pomodoro" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-control">
+          <span>Show Search Bar</span>
+          <label class="switch" for="toggle-widget-search">
+            <input type="checkbox" id="toggle-widget-search" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
